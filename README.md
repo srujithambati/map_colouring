@@ -27,7 +27,8 @@ Stop Game: Click on the "Stop Game" button to end the current game session.
 Next Map: Explore different maps by clicking on the "Next Map" button.
 
 
-#week 3
+Technologies Used: Html, CSS, javascript,Flask
+Week 3:
 Actions committed:
 1.	To define the project goals and deliverables.
 2.	To create GitHub repo.
@@ -39,10 +40,3 @@ Actions completed:
 2.	Created GitHub repo for the project along with required folders as mentioned in the instructions.
 3.	Completed flask project setup.
 4.	Designed and developed the SignIn and SignUp page.
-![image](https://github.com/srujithambati/map_colouring/assets/132723091/8bac9f01-80a9-440e-bf47-d7e27074f5a8)
-
-
-Technologies Used: Html, CSS, javascript,Flask
-
-Disclaimer
-This project is intended for entertainment and educational purposes. The color mapping game encourages creativity and adherence to coloring rules, providing an enjoyable experience for users of all ages.
