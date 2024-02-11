@@ -26,6 +26,22 @@ Stop Game: Click on the "Stop Game" button to end the current game session.
 
 Next Map: Explore different maps by clicking on the "Next Map" button.
 
+
+#week 3
+Actions committed:
+1.	To define the project goals and deliverables.
+2.	To create GitHub repo.
+3.	To setup flask project.
+4.	To design and develop login and signup page with basic UI.
+
+Actions completed:
+1.	Outlined the goals and deliverables of the project. 
+2.	Created GitHub repo for the project along with required folders as mentioned in the instructions.
+3.	Completed flask project setup.
+4.	Designed and developed the SignIn and SignUp page.
+![image](https://github.com/srujithambati/map_colouring/assets/132723091/8bac9f01-80a9-440e-bf47-d7e27074f5a8)
+
+
 Technologies Used: Html, CSS, javascript,Flask
 
 Disclaimer
