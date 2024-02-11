@@ -1,4 +1,6 @@
 # map_colouring
+Srujith Rao Ambati
+
 Overview
 The Color Mapping project is a web-based game that allows users to interactively color different shapes on a grid. The primary goal is to provide an engaging platform for users to explore their creativity while following specific rules related to color selection.
 
@@ -11,24 +13,34 @@ Game Controls: The project includes controls for starting and stopping the game,
 
 Map Selection: Users can choose from a selection of predefined maps, each with its unique layout and challenge.
 
-Alerts and Notifications: The application provides informative alerts to guide users and ensure they adhere to the rules of the game.
 
-How to Play
-Start Game: Click on the "Start Game" button to initiate the coloring session.
+The URL to the GitHub repository:
 
-Select Map: Choose from a list of available maps using the "Select Map" dropdown menu. The map defines the structure and complexity of the shapes to be colored.
+https://github.com/srujithambati/map_colouring.gitLinks
 
-Color Selection: Use the color palette to select a color for coloring the shapes on the map.
+Milestones with deadlines:
 
-Coloring Rules: Click on a box within the shape to apply the selected color. Be mindful of the coloring rules, especially avoiding the same color for adjacent boxes.
+Week 1:  Setup using flask. 
 
-Stop Game: Click on the "Stop Game" button to end the current game session.
+Week 2: functionalities for user signup, sign in.
 
-Next Map: Explore different maps by clicking on the "Next Map" button.
+Week 3 & 4: design user interface for game with logic and progress saving.
+
+Week 5: testing & deployment.
+
+Algorithms/AI schemes used in the core engine:
+
+Backtracking algorithm.
+Describe the market space the application is related to and the selling points of your product:
+
+It is an engaging puzzle game designed for educational enthusiasts, providing a fun and interactive way to explore computer science and mathematics through algorithmic thinking.
+Improving logical thinking.
+
+Technologies Used: Html, CSS, javascript,Flask.
 
 
-Technologies Used: Html, CSS, javascript,Flask
 Week 3:
+
 Actions committed:
 1.	To define the project goals and deliverables.
 2.	To create GitHub repo.
