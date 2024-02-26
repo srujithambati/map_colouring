@@ -1,0 +1,131 @@
+<!-- welcome.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome, {{ fullname }}</h1>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map Coloring Game</title>
+  <style>
+    /* CSS styling for the map */
+    .map {
+      display: grid;
+      grid-template-columns: repeat(5, 50px);
+      grid-template-rows: repeat(5, 50px);
+      gap: 2px;
+    }
+    .cell {
+      background-color: lightgray;
+      border: 1px solid gray;
+      cursor: pointer;
+    }
+    #score {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="map" id="map"></div>
+  <div>
+    <select id="colorPicker" onchange="changeColor(this.value)">
+      <option value="red">Red</option>
+      <option value="green">Green</option>
+      <option value="blue">Blue</option>
+      <option value="yellow">Yellow</option>
+    </select>
+  </div>
+  <button onclick="reset()">Reset</button>
+  <div id="score">Score: <span id="scoreValue">0</span></div>
+  
+  <script>
+    // JavaScript code for map coloring game
+    const map = document.getElementById('map');
+    const scoreValue = document.getElementById('scoreValue');
+    let selectedColor = 'red'; // Default color
+
+    // Create grid cells for the map
+    for (let i = 0; i < 25; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.dataset.color = '';
+      cell.addEventListener('click', () => colorCell(cell));
+      map.appendChild(cell);
+    }
+
+    // Function to color a cell when clicked
+    function colorCell(cell) {
+      const color = selectedColor;
+      const currentColor = cell.dataset.color;
+      if (currentColor === color) return; // Avoid redundant coloring
+      
+      // Check if any adjacent cell has the same color
+      if (!checkAdjacentCells(cell, color)) {
+        alert('Adjacent regions cannot have the same color!');
+        return;
+      }
+      
+      cell.dataset.color = color;
+      cell.style.backgroundColor = color;
+      scoreValue.textContent = parseInt(scoreValue.textContent) + 1; // Increase score when coloring a cell
+    }
+
+    // Function to change the selected color
+    function changeColor(color) {
+      selectedColor = color;
+    }
+
+    // Function to check if adjacent cells (including diagonals) have the same color
+    function checkAdjacentCells(cell, color) {
+      const neighbors = getNeighbors(cell);
+      for (const neighbor of neighbors) {
+        if (neighbor && neighbor.dataset.color === color) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Function to reset the map
+    function reset() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => {
+        cell.dataset.color = '';
+        cell.style.backgroundColor = 'lightgray';
+      });
+      scoreValue.textContent = '0';
+    }
+
+    // Function to get adjacent cells (including diagonals)
+    function getNeighbors(cell) {
+      const grid = map.children;
+      const index = Array.from(grid).indexOf(cell);
+      const numRows = 5;
+      const numCols = 5;
+      const neighbors = [];
+      const offsets = [-numCols - 1, -numCols, -numCols + 1, -1, 1, numCols - 1, numCols, numCols + 1];
+
+      for (const offset of offsets) {
+        const neighborIndex = index + offset;
+        if (neighborIndex >= 0 && neighborIndex < grid.length) {
+          neighbors.push(grid[neighborIndex]);
+        } else {
+          neighbors.push(null);
+        }
+      }
+
+      return neighbors;
+    }
+  </script>
+</body>
+</html>
