@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Map Coloring Game</title>
   <style>
-
     .map {
       display: grid;
       grid-template-columns: repeat(5, 50px);
@@ -25,37 +24,49 @@
     #score {
       margin-top: 10px;
     }
+    .color-palette {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .color-swatch {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
   <h1>Welcome, {{ fullname }}</h1>
-  <a href="{{ url_for('logout') }}" style="position: absolute; top: 10px; right: 10px; background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; display: inline-block; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;" class="hover:bg-blue-600">Logout</a>
+  <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
 
-  <div class="map" id="map" style="display: none;"></div>
-  <div>
-    <select id="colorPicker" onchange="changeColor(this.value)">
-      <option value="red">Red</option>
-      <option value="green">Green</option>
-      <option value="blue">Blue</option>
-      <option value="yellow">Yellow</option>
-    </select>
-  </div>
   <button onclick="startGame()">Start</button>
   <button onclick="reset()">Reset</button>
+  <button id="displaySolutionBtn" onclick="displaySolution()" style="display: none;">Display Solution</button>
   <div id="score">Score: <span id="scoreValue">0</span></div>
-  <div id="timer">Time left: 2:00</div>
-
+  <div id="timerDisplay" style="display: none;">Time Left: <span id="timerValue">20</span> seconds</div>
+  <div class="map" id="map" style="display: none;"></div>
+  <div class="color-palette" style="display: none;">
+    <div class="color-swatch" style="background-color: red;" onclick="changeColor('red')"></div>
+    <div class="color-swatch" style="background-color: green;" onclick="changeColor('green')"></div>
+    <div class="color-swatch" style="background-color: blue;" onclick="changeColor('blue')"></div>
+    <div class="color-swatch" style="background-color: yellow;" onclick="changeColor('yellow')"></div>
+    <div class="color-swatch" style="background-color: orange;" onclick="changeColor('orange')"></div>
+    <div class="color-swatch" style="background-color: brown;" onclick="changeColor('brown')"></div>
+    <div class="color-swatch" style="background-color: pink;" onclick="changeColor('pink')"></div>
+    <!-- Add more color swatches as needed -->
+  </div>
+  
   <script>
     // JavaScript code for map coloring game
     const map = document.getElementById('map');
     const scoreValue = document.getElementById('scoreValue');
-    const timerDisplay = document.getElementById('timer');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const displaySolutionBtn = document.getElementById('displaySolutionBtn');
     let selectedColor = 'red'; // Default color
+    let solutionColors = ['red', 'green', 'blue', 'yellow', 'orange', 'brown', 'pink']; // Solution colors
     let timer;
-    let timeLeft = 120; // 2 minutes in seconds
-
-    // Map data
-    let solution = null; // Solution to the puzzle
 
     // Create grid cells for the map
     for (let i = 0; i < 25; i++) {
@@ -66,40 +77,18 @@
       map.appendChild(cell);
     }
 
-    // Function to start the game
-    function startGame() {
-      map.style.display = 'grid';
-      timer = setInterval(updateTimer, 1000);
-      generateSolution(); // Generate solution using backtracking algorithm
-    }
-
-    // Function to update the timer display
-    function updateTimer() {
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        timerDisplay.textContent = 'Time\'s up!';
-        revealSolution();
-      } else {
-        const minutes = Math.floor(timeLeft / 60);
-        let seconds = timeLeft % 60;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-        timerDisplay.textContent = `Time left: ${minutes}:${seconds}`;
-        timeLeft--;
-      }
-    }
-
     // Function to color a cell when clicked
     function colorCell(cell) {
       const color = selectedColor;
       const currentColor = cell.dataset.color;
       if (currentColor === color) return; // Avoid redundant coloring
-
+      
       // Check if any adjacent cell has the same color
       if (!checkAdjacentCells(cell, color)) {
         alert('Adjacent regions cannot have the same color!');
         return;
       }
-
+      
       cell.dataset.color = color;
       cell.style.backgroundColor = color;
       scoreValue.textContent = parseInt(scoreValue.textContent) + 1; // Increase score when coloring a cell
@@ -123,16 +112,12 @@
 
     // Function to reset the map
     function reset() {
-      clearInterval(timer);
-      map.style.display = 'none';
-      timeLeft = 120;
-      timerDisplay.textContent = 'Time left: 2:00';
-      scoreValue.textContent = '0';
       const cells = document.querySelectorAll('.cell');
       cells.forEach(cell => {
         cell.dataset.color = '';
         cell.style.backgroundColor = 'lightgray';
       });
+      scoreValue.textContent = '0';
     }
 
     // Function to get adjacent cells (including diagonals)
@@ -146,7 +131,19 @@
 
       for (const offset of offsets) {
         const neighborIndex = index + offset;
-        if (neighborIndex >= 0 && neighborIndex < grid.length) {
+        const row = Math.floor(index / numCols);
+        const col = index % numCols;
+        const neighborRow = Math.floor(neighborIndex / numCols);
+        const neighborCol = neighborIndex % numCols;
+
+        // Check if the neighbor is within the grid boundaries
+        if (
+          neighborRow >= 0 && neighborRow < numRows &&
+          neighborCol >= 0 && neighborCol < numCols &&
+          // Exclude circular diagonals (top left to bottom right and top right to bottom left)
+          !((row === 0 && neighborRow === numRows - 1) || (row === numRows - 1 && neighborRow === 0)) &&
+          !((col === 0 && neighborCol === numCols - 1) || (col === numCols - 1 && neighborCol === 0))
+        ) {
           neighbors.push(grid[neighborIndex]);
         } else {
           neighbors.push(null);
@@ -156,95 +153,76 @@
       return neighbors;
     }
 
-    // Function to generate solution using backtracking algorithm
-    function generateSolution() {
-      const grid = Array.from(map.children);
-      const numColors = 4; // Number of available colors
-      const numRegions = grid.length;
+    // Function to start the game
+    function startGame() {
+      const startButton = document.querySelector('button:nth-of-type(1)');
+      startButton.disabled = true;
+      const grid = document.getElementById('map');
+      const colorPalette = document.querySelector('.color-palette');
+      grid.style.display = 'grid';
+      colorPalette.style.display = 'flex';
+      timerDisplay.style.display = 'block'; // Show timer
+      displaySolutionBtn.style.display = 'inline-block'; // Show display solution button
+      timer = setInterval(updateTimer, 1000); // Start the timer
+      setTimeout(displaySolution, 20000); // Automatically display solution after 20 seconds
+    }
 
-      // Initialize solution array
-      solution = new Array(numRegions).fill(0);
-
-      // Perform backtracking to find solution
-      backtrack(0);
-
-      // Apply solution to grid
-      for (let i = 0; i < numRegions; i++) {
-        grid[i].dataset.color = getColorName(solution[i]);
-        grid[i].style.backgroundColor = getColorName(solution[i]);
+    // Function to update the timer display
+    function updateTimer() {
+      const timerValue = document.getElementById('timerValue');
+      let timeLeft = parseInt(timerValue.textContent);
+      if (timeLeft > 0) {
+        timeLeft--;
+        timerValue.textContent = timeLeft;
+      } else {
+        clearInterval(timer); // Stop the timer when time is up
+        displaySolution(); // Display solution
       }
     }
 
-    // Backtracking function to find solution
-    function backtrack(index) {
-      if (index >= solution.length) {
-        return true; // Solution found
-      }
+    // Function to display solution using the Greedy Coloring Algorithm
+    function displaySolution() {
+      clearTimeout(timer); // Stop the timer
+      clearInterval(timer); // Stop the timer
+      const cells = document.querySelectorAll('.cell');
+      const adjacentMatrix = new Array(25).fill(null).map(() => new Array(25).fill(false));
 
-      for (let color = 1; color <= numColors; color++) {
-        if (isSafe(index, color)) {
-          solution[index] = color;
-          if (backtrack(index + 1)) {
-            return true;
+      // Initialize adjacent matrix
+      cells.forEach((cell, index) => {
+        const neighbors = getNeighbors(cell).filter(neighbor => neighbor !== null);
+        neighbors.forEach(neighbor => {
+          const neighborIndex = Array.from(map.children).indexOf(neighbor);
+          adjacentMatrix[index][neighborIndex] = true;
+          adjacentMatrix[neighborIndex][index] = true;
+        });
+      });
+
+      const colors = new Array(25).fill(-1);
+
+      // Greedy coloring algorithm
+      for (let i = 0; i < 25; i++) {
+        const availableColors = new Array(7).fill(true);
+
+        for (let j = 0; j < 25; j++) {
+          if (adjacentMatrix[i][j] && colors[j] !== -1) {
+            availableColors[colors[j]] = false;
           }
-          solution[index] = 0; // Backtrack
+        }
+
+        for (let color = 0; color < 7; color++) {
+          if (availableColors[color]) {
+            colors[i] = color;
+            break;
+          }
         }
       }
 
-      return false; // No solution found
-    }
-
-    // Function to check if coloring a region with a given color is safe
-    function isSafe(index, color) {
-      const grid = Array.from(map.children);
-      const neighbors = getNeighbors(grid[index]);
-      for (const neighbor of neighbors) {
-        if (neighbor && getColorValue(neighbor.dataset.color) === color) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    // Function to get color value from color name
-    function getColorValue(colorName) {
-      switch (colorName) {
-        case 'red':
-          return 1;
-        case 'green':
-          return 2;
-        case 'blue':
-          return 3;
-        case 'yellow':
-          return 4;
-        default:
-          return 0;
-      }
-    }
-
-    // Function to get color name from color value
-    function getColorName(colorValue) {
-      switch (colorValue) {
-        case 1:
-          return 'red';
-        case 2:
-          return 'green';
-        case 3:
-          return 'blue';
-        case 4:
-          return 'yellow';
-        default:
-          return '';
-      }
-    }
-
-    // Function to reveal solution to the user
-    function revealSolution() {
-      const grid = Array.from(map.children);
-      for (let i = 0; i < grid.length; i++) {
-        grid[i].dataset.color = getColorName(solution[i]);
-        grid[i].style.backgroundColor = getColorName(solution[i]);
-      }
+      cells.forEach((cell, index) => {
+        const colorIndex = colors[index];
+        const color = solutionColors[colorIndex];
+        cell.dataset.color = color;
+        cell.style.backgroundColor = color;
+      });
     }
   </script>
 </body>
