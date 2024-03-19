@@ -118,6 +118,8 @@
         cell.style.backgroundColor = 'lightgray';
       });
       scoreValue.textContent = '0';
+      displaySolutionBtn.style.display = 'none'; // Hide display solution button
+
     }
 
     // Function to get adjacent cells (including diagonals)
@@ -153,77 +155,89 @@
       return neighbors;
     }
 
-    // Function to start the game
-    function startGame() {
-      const startButton = document.querySelector('button:nth-of-type(1)');
-      startButton.disabled = true;
-      const grid = document.getElementById('map');
-      const colorPalette = document.querySelector('.color-palette');
-      grid.style.display = 'grid';
-      colorPalette.style.display = 'flex';
-      timerDisplay.style.display = 'block'; // Show timer
-      displaySolutionBtn.style.display = 'inline-block'; // Show display solution button
-      timer = setInterval(updateTimer, 1000); // Start the timer
-      setTimeout(displaySolution, 20000); // Automatically display solution after 20 seconds
-    }
+// Function to start the game
+// Define startButton as a global variable
+const startButton = document.querySelector('button:nth-of-type(1)');
+// Function to start the game
+// Function to start the game
+// Function to start the game
+function startGame() {
+  clearInterval(timer); // Clear any existing timer
+  const timerValue = document.getElementById('timerValue');
+  timerValue.textContent = '20'; // Reset timer value
+  startButton.disabled = true;
+  const grid = document.getElementById('map');
+  const colorPalette = document.querySelector('.color-palette');
+  grid.style.display = 'grid';
+  colorPalette.style.display = 'flex';
+  timerDisplay.style.display = 'block'; // Show timer
+  timer = setInterval(updateTimer, 1000); // Start the timer
+}
 
-    // Function to update the timer display
-    function updateTimer() {
-      const timerValue = document.getElementById('timerValue');
-      let timeLeft = parseInt(timerValue.textContent);
-      if (timeLeft > 0) {
-        timeLeft--;
-        timerValue.textContent = timeLeft;
-      } else {
-        clearInterval(timer); // Stop the timer when time is up
-        displaySolution(); // Display solution
+
+
+// Function to update the timer display
+function updateTimer() {
+  const timerValue = document.getElementById('timerValue');
+  let timeLeft = parseInt(timerValue.textContent);
+  if (timeLeft > 0) {
+    timeLeft--;
+    timerValue.textContent = timeLeft;
+  } else {
+    clearInterval(timer); // Stop the timer when time is up
+    displaySolutionBtn.style.display = 'inline-block'; // Show display solution button
+    startButton.disabled = false;
+
+  }
+}
+
+
+
+// Function to display solution using the Greedy Coloring Algorithm
+function displaySolution() {
+  clearTimeout(timer); // Stop the timer
+  clearInterval(timer); // Stop the timer
+  const cells = document.querySelectorAll('.cell');
+  const adjacentMatrix = new Array(25).fill(null).map(() => new Array(25).fill(false));
+
+  // Initialize adjacent matrix
+  cells.forEach((cell, index) => {
+    const neighbors = getNeighbors(cell).filter(neighbor => neighbor !== null);
+    neighbors.forEach(neighbor => {
+      const neighborIndex = Array.from(map.children).indexOf(neighbor);
+      adjacentMatrix[index][neighborIndex] = true;
+      adjacentMatrix[neighborIndex][index] = true;
+    });
+  });
+
+  const colors = new Array(25).fill(-1);
+
+  // Greedy coloring algorithm
+  for (let i = 0; i < 25; i++) {
+    const availableColors = new Array(7).fill(true);
+
+    for (let j = 0; j < 25; j++) {
+      if (adjacentMatrix[i][j] && colors[j] !== -1) {
+        availableColors[colors[j]] = false;
       }
     }
 
-    // Function to display solution using the Greedy Coloring Algorithm
-    function displaySolution() {
-      clearTimeout(timer); // Stop the timer
-      clearInterval(timer); // Stop the timer
-      const cells = document.querySelectorAll('.cell');
-      const adjacentMatrix = new Array(25).fill(null).map(() => new Array(25).fill(false));
-
-      // Initialize adjacent matrix
-      cells.forEach((cell, index) => {
-        const neighbors = getNeighbors(cell).filter(neighbor => neighbor !== null);
-        neighbors.forEach(neighbor => {
-          const neighborIndex = Array.from(map.children).indexOf(neighbor);
-          adjacentMatrix[index][neighborIndex] = true;
-          adjacentMatrix[neighborIndex][index] = true;
-        });
-      });
-
-      const colors = new Array(25).fill(-1);
-
-      // Greedy coloring algorithm
-      for (let i = 0; i < 25; i++) {
-        const availableColors = new Array(7).fill(true);
-
-        for (let j = 0; j < 25; j++) {
-          if (adjacentMatrix[i][j] && colors[j] !== -1) {
-            availableColors[colors[j]] = false;
-          }
-        }
-
-        for (let color = 0; color < 7; color++) {
-          if (availableColors[color]) {
-            colors[i] = color;
-            break;
-          }
-        }
+    for (let color = 0; color < 7; color++) {
+      if (availableColors[color]) {
+        colors[i] = color;
+        break;
       }
-
-      cells.forEach((cell, index) => {
-        const colorIndex = colors[index];
-        const color = solutionColors[colorIndex];
-        cell.dataset.color = color;
-        cell.style.backgroundColor = color;
-      });
     }
+  }
+
+  cells.forEach((cell, index) => {
+    const colorIndex = colors[index];
+    const color = solutionColors[colorIndex];
+    cell.dataset.color = color;
+    cell.style.backgroundColor = color;
+  });
+}
+
   </script>
 </body>
 </html>
