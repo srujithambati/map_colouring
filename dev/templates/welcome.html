@@ -35,16 +35,19 @@
       border-radius: 50%;
       cursor: pointer;
     }
+    #exitButton{
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
   <h1>Welcome, {{ fullname }}</h1>
   <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
 
-  <button onclick="startGame()">Start</button>
-  <button onclick="reset()">Reset</button>
-  <button id="displaySolutionBtn" onclick="displaySolution()" style="display: none;">Display Solution</button>
-  <div id="score">Score: <span id="scoreValue">0</span></div>
+  <button style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;" onclick="startGame() ">Start</button>
+  <button style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;" onclick="reset()">Reset</button>
+  <button id="displaySolutionBtn" onclick="displaySolution()" style="background-color: #3B82F6; display: none; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Display Solution</button>
+  <div id="score" style="display: none;">Score: <span id="scoreValue">0</span></div>
   <div id="timerDisplay" style="display: none;">Time Left: <span id="timerValue">20</span> seconds</div>
   <div class="map" id="map" style="display: none;"></div>
   <div class="color-palette" style="display: none;">
@@ -57,6 +60,9 @@
     <div class="color-swatch" style="background-color: pink;" onclick="changeColor('pink')"></div>
     <!-- Add more color swatches as needed -->
   </div>
+  <!-- Button to exit the game and return to the main menu -->  
+<button id="exitButton" style="background-color: #3B82F6; display: none; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;"   onclick="exitGame()">Exit Game</button>
+
   
   <script>
     // JavaScript code for map coloring game
@@ -158,14 +164,13 @@
 // Function to start the game
 // Define startButton as a global variable
 const startButton = document.querySelector('button:nth-of-type(1)');
-// Function to start the game
-// Function to start the game
-// Function to start the game
 function startGame() {
+  score.style.display ='block';
   clearInterval(timer); // Clear any existing timer
   const timerValue = document.getElementById('timerValue');
   timerValue.textContent = '20'; // Reset timer value
   startButton.disabled = true;
+  exitButton.style.display = 'block';
   const grid = document.getElementById('map');
   const colorPalette = document.querySelector('.color-palette');
   grid.style.display = 'grid';
@@ -190,6 +195,23 @@ function updateTimer() {
 
   }
 }
+
+// Function to exit the game and return to the main menu
+function exitGame() {
+  clearInterval(timer); // Stop the timer
+  reset(); // Reset the game
+  const grid = document.getElementById('map');
+  const colorPalette = document.querySelector('.color-palette');
+  grid.style.display = 'none'; // Hide the grid
+  colorPalette.style.display = 'none'; // Hide the color palette
+  timerDisplay.style.display = 'none'; // Hide the timer display
+  displaySolutionBtn.style.display = 'none'; // Hide the display solution button
+  startButton.disabled = false; // Enable the start button
+  exitButton.style.display = 'none';
+  score.style.display='none'
+
+}
+
 
 
 
