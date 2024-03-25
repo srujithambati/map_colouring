@@ -4,11 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Map Coloring Game</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap">
+
   <style>
+
+    body {
+      font-family: 'Roboto', sans-serif; 
+
+    }
+    
+    .logout-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    
+    
     .map {
       display: grid;
-      grid-template-columns: repeat(5, 50px);
-      grid-template-rows: repeat(5, 50px);
+
       gap: 2px;
     }
     .cell {
@@ -46,14 +60,81 @@
     #start, #reset, #displaySolutionBtn{
       background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;
     }
+    #start,#reset{
+      margin-top: 10px;
+    }
+    .difficulty-selector {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .difficulty-option {
+      display: flex;
+      align-items: center;
+    }
+    
+    .difficulty-option input[type="radio"] {
+      display: none;
+    }
+    
+    .radio-custom {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #3B82F6;
+      border-radius: 50%;
+      margin-right: 5px;
+      position: relative;
+    }
+    
+    .radio-custom::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #3B82F6;
+      transition: transform 0.2s ease-in-out;
+    }
+    
+    .difficulty-option input[type="radio"]:checked + .radio-custom::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    
   </style>
 </head>
 <body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
-  <h1>Welcome, {{ fullname }}</h1>
+  <h2 class="heading">WELCOME, {{ fullname }}</h2>
   <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
+  <h3 class="selectHeading">SELECT DIFFICULTY LEVEL</h3> 
 
+  <div class="difficulty-selector">
+    <label class="difficulty-option">
+      <input type="radio" name="difficulty" value="easy" checked>
+      <span class="radio-custom"></span>
+      Easy
+    </label>
+    <label class="difficulty-option">
+      <input type="radio" name="difficulty" value="intermediate">
+      <span class="radio-custom"></span>
+      Intermediate
+    </label>
+    <label class="difficulty-option">
+      <input type="radio" name="difficulty" value="hard">
+      <span class="radio-custom"></span>
+      Hard
+    </label>
+    <label class="difficulty-option">
+      <input type="radio" name="difficulty" value="advanced">
+      <span class="radio-custom"></span>
+      Advanced
+    </label>
+  </div>
+  
   <button id="start"  onclick="startGame() ">Start</button>
-  <button id="reset"  onclick="reset()">Reset</button>
+  <button id="reset"  onclick="reset()" style="display: none">Reset</button>
   <button id="displaySolutionBtn" style="display: none" onclick="displaySolution()" >Display Solution</button>
   <div id="score" style="display: none;">Score: <span id="scoreValue">0</span></div>
   <div id="timerDisplay" style="display: none;">Time Left: <span id="timerValue">20</span> seconds</div>
@@ -66,6 +147,14 @@
     <div class="color-swatch" style="background-color: orange;" onclick="changeColor('orange')"></div>
     <div class="color-swatch" style="background-color: brown;" onclick="changeColor('brown')"></div>
     <div class="color-swatch" style="background-color: pink;" onclick="changeColor('pink')"></div>
+    <div class="color-swatch" style="background-color: purple;" onclick="changeColor('purple')"></div>
+    <div class="color-swatch" style="background-color: cyan;" onclick="changeColor('cyan')"></div>
+    <div class="color-swatch" style="background-color: magenta;" onclick="changeColor('magenta')"></div>
+    <div class="color-swatch" style="background-color: lime;" onclick="changeColor('lime')"></div>
+    <div class="color-swatch" style="background-color: teal;" onclick="changeColor('teal')"></div>
+    <div class="color-swatch" style="background-color: silver;" onclick="changeColor('silver')"></div>
+    <div class="color-swatch" style="background-color: gold;" onclick="changeColor('gold')"></div>
+    
     <!-- Add more color swatches as needed -->
   </div>
   <!-- Button to exit the game and return to the main menu -->  
@@ -79,16 +168,39 @@
     const timerDisplay = document.getElementById('timerDisplay');
     const displaySolutionBtn = document.getElementById('displaySolutionBtn');
     let selectedColor = 'red'; // Default color
-    let solutionColors = ['red', 'green', 'blue', 'yellow', 'orange', 'brown', 'pink']; // Solution colors
+    let solutionColors = ['red', 'green', 'blue', 'yellow', 'orange', 'brown', 'pink', 'purple', 'cyan', 'magenta', 'lime', 'teal', 'silver', 'gold']; // Solution colors
     let timer;
+    const colorsLength = solutionColors.length;
+    console.log(solutionColors.length); // Output: 14
 
     // Create grid cells for the map
-    for (let i = 0; i < 25; i++) {
+    let gridSize, timerDuration;
+    for (let i = 0; i < gridSize * gridSize; i++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
       cell.dataset.color = '';
       cell.addEventListener('click', () => colorCell(cell));
       map.appendChild(cell);
+    }
+
+
+    function updateGrid(gridSize) {
+      const map = document.getElementById('map');
+      map.style.gridTemplateColumns = `repeat(${gridSize}, 50px)`;
+      map.style.gridTemplateRows = `repeat(${gridSize}, 50px)`;
+    
+      // Clear existing grid
+      map.innerHTML = '';
+      map.innerHTML = ''; // Clear existing grid
+  
+      // Create grid cells for the map
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.color = '';
+        cell.addEventListener('click', () => colorCell(cell));
+        map.appendChild(cell);
+      }
     }
 
     // Function to color a cell when clicked
@@ -140,8 +252,8 @@
     function getNeighbors(cell) {
       const grid = map.children;
       const index = Array.from(grid).indexOf(cell);
-      const numRows = 5;
-      const numCols = 5;
+      const numRows = gridSize;
+      const numCols = gridSize;
       const neighbors = [];
       const offsets = [-numCols - 1, -numCols, -numCols + 1, -1, 1, numCols - 1, numCols, numCols + 1];
 
@@ -172,15 +284,50 @@
 // Function to start the game
 // Define startButton as a global variable
 const startButton = document.querySelector('button:nth-of-type(1)');
+const resetButton = document.getElementById('reset');
+
 function startGame() {
+  const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+
+  // Set grid size and timer duration based on difficulty level
+  switch (difficulty) {
+    case 'easy':
+      gridSize = 5;
+      timerDuration = '20';
+      break;
+    case 'intermediate':
+      gridSize = 7;
+      timerDuration = '40';
+      break;
+    case 'hard':
+      gridSize = 10;
+      timerDuration = '90';
+      break;
+    case 'advanced':
+      gridSize = 13;
+      timerDuration = '120';
+      break;
+    default:
+      gridSize = 10; // Default to hard difficulty
+      timerDuration = '90';
+      break;
+  }
+
+  updateGrid(gridSize);
+
   score.style.display ='block';
   clearInterval(timer); // Clear any existing timer
   const timerValue = document.getElementById('timerValue');
-  timerValue.textContent = '20'; // Reset timer value
+  timerValue.textContent = timerDuration; // Reset timer value
   startButton.disabled = true;
   exitButton.style.display = 'block';
   const grid = document.getElementById('map');
   const colorPalette = document.querySelector('.color-palette');
+  const selector = document.querySelector('.difficulty-selector');
+  const heading = document.querySelector('.selectHeading');
+  heading.style.display ='none';
+  resetButton.style.display = 'block';
+  selector.style.display ='none';
   grid.style.display = 'grid';
   colorPalette.style.display = 'flex';
   timerDisplay.style.display = 'block'; // Show timer
@@ -217,6 +364,12 @@ function exitGame() {
   startButton.disabled = false; // Enable the start button
   exitButton.style.display = 'none';
   score.style.display='none'
+  const selector = document.querySelector('.difficulty-selector');
+  selector.style.display ='block';
+  const heading = document.querySelector('.selectHeading');
+  heading.style.display ='none';
+  resetButton.style.display='none'
+
 
 }
 
@@ -228,7 +381,7 @@ function displaySolution() {
   clearTimeout(timer); // Stop the timer
   clearInterval(timer); // Stop the timer
   const cells = document.querySelectorAll('.cell');
-  const adjacentMatrix = new Array(25).fill(null).map(() => new Array(25).fill(false));
+  const adjacentMatrix = new Array(gridSize * gridSize).fill(null).map(() => new Array(gridSize * gridSize).fill(false));
 
   // Initialize adjacent matrix
   cells.forEach((cell, index) => {
@@ -240,19 +393,19 @@ function displaySolution() {
     });
   });
 
-  const colors = new Array(25).fill(-1);
+  const colors = new Array(gridSize * gridSize).fill(-1);
 
   // Greedy coloring algorithm
-  for (let i = 0; i < 25; i++) {
-    const availableColors = new Array(7).fill(true);
+  for (let i = 0; i < gridSize * gridSize; i++) {
+    const availableColors = new Array(colorsLength).fill(true);
 
-    for (let j = 0; j < 25; j++) {
+    for (let j = 0; j < gridSize * gridSize; j++) {
       if (adjacentMatrix[i][j] && colors[j] !== -1) {
         availableColors[colors[j]] = false;
       }
     }
 
-    for (let color = 0; color < 7; color++) {
+    for (let color = 0; color < colorsLength; color++) {
       if (availableColors[color]) {
         colors[i] = color;
         break;
