@@ -16,8 +16,10 @@ source venv/bin/activate
 
 
 # Step 6: Run the Application by giving the commands
-cd dev
-flask run
+# 1. go to dev folder and run the command
+    cd dev
+# 2. inside dev run the command
+    flask run
 
-# Step 9: Access the Application
+# Step 7: Access the Application
 # Once the application is running, you can access it by navigating to `http://localhost:5000` in your web browser.
