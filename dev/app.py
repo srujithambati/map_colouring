@@ -68,7 +68,7 @@
 #     db.create_all()
 #     app.run(debug=True)
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from werkzeug.security import check_password_hash
@@ -92,15 +92,27 @@ def home():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        fullname= request.form['fullname']
+        fullname = request.form['fullname']
         email = request.form['email']
         password = request.form['password']
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash_message="Error"
+            print("error")
+            return render_template('signup.html',flash_message=flash_message)
+
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         new_user = User(fullname=fullname, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
+        flash('Account created successfully. Please log in.', 'success')
         return redirect(url_for('login'))
-    return render_template('signup.html')
+
+    # Pass flashed message to the template
+    flash_message = flash('error')
+    print(flash_message)  # Print flashed message for debugging
+    return render_template('signup.html', flash_message=flash_message)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -37,6 +37,7 @@
         <div class="mt-4">
             <p class="text-gray-600">Existing user? <a href="/login" class="text-blue-500">Login</a></p>
         </div>
+
     </div>
 
     <script>
@@ -45,7 +46,7 @@
             var password = document.getElementById("password").value;
             var emailError = document.getElementById("emailError");
             var passwordError = document.getElementById("passwordError");
-
+            
             // Email validation
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
@@ -62,6 +63,12 @@
                 return false;
             } else {
                 passwordError.textContent = "";
+            }
+
+            var flashMessage = "{{ flash_message }}";
+            if (flashMessage) {
+                // Do something with the flashed message (e.g., display it)
+                alert("User already exists");
             }
 
             return true;
