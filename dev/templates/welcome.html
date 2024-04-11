@@ -57,12 +57,19 @@
       color: #ffffff;
       cursor: not-allowed;
     }
-    #start, #reset, #displaySolutionBtn{
-      background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;
-    }
-    #start,#reset{
-      margin-top: 10px;
-    }
+    #start, #reset, #displaySolutionBtn, #exitButton {
+      background-color: #3B82F6; 
+      color: white; 
+      padding: 0.5rem 1rem; 
+      border-radius: 0.25rem; 
+      text-decoration: none; 
+      transition: background-color 0.3s ease-in-out; 
+      font-size: 14px; 
+      font-family: 'Arial', sans-serif;
+      height: auto; /* Set height to 'auto' for consistent button heights */
+      line-height: 1; /* Ensure line height is not affecting button height */
+  }
+  
     .difficulty-selector {
       display: flex;
       gap: 10px;
@@ -102,12 +109,19 @@
     .difficulty-option input[type="radio"]:checked + .radio-custom::after {
       transform: translate(-50%, -50%) scale(1);
     }
+
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
     
   </style>
 </head>
 <body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
-  <h2 class="heading">WELCOME, {{ fullname }}</h2>
   <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
+
+  <h2 class="heading">WELCOME, {{ fullname }}</h2>
   <h3 class="selectHeading">SELECT DIFFICULTY LEVEL</h3> 
 
   <div class="difficulty-selector">
@@ -133,9 +147,11 @@
     </label>
   </div>
   
-  <button id="start"  onclick="startGame() ">Start</button>
-  <button id="reset"  onclick="reset()" style="display: none">Reset</button>
-  <button id="displaySolutionBtn" style="display: none" onclick="displaySolution()" >Display Solution</button>
+  <div class="button-container">
+    <button id="start" onclick="startGame()">Start</button>
+    <button id="reset" onclick="reset()" style="display: none">Reset</button>
+    <button id="displaySolutionBtn" style="display: none" onclick="displaySolution()">Display Solution</button>
+  </div>
   <div id="score" style="display: none;">Score: <span id="scoreValue">0</span></div>
   <div id="timerDisplay" style="display: none;">Time Left: <span id="timerValue">20</span> seconds</div>
   <div class="map" id="map" style="display: none;"></div>
@@ -293,7 +309,7 @@ function startGame() {
   switch (difficulty) {
     case 'easy':
       gridSize = 5;
-      timerDuration = '20';
+      timerDuration = '1';
       break;
     case 'intermediate':
       gridSize = 7;
