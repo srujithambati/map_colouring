@@ -115,12 +115,19 @@
       gap: 10px;
       margin-top: 10px;
     }
-    
+    .mainContainer{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh; /* Adjust the height as needed */
+    }
   </style>
 </head>
 <body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
   <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
 
+  <div class="mainContainer">
   <h2 class="heading">WELCOME, {{ fullname }}</h2>
   <h3 class="selectHeading">SELECT DIFFICULTY LEVEL</h3> 
 
@@ -162,19 +169,13 @@
     <div class="color-swatch" style="background-color: yellow;" onclick="changeColor('yellow')"></div>
     <div class="color-swatch" style="background-color: orange;" onclick="changeColor('orange')"></div>
     <div class="color-swatch" style="background-color: brown;" onclick="changeColor('brown')"></div>
-    <div class="color-swatch" style="background-color: pink;" onclick="changeColor('pink')"></div>
-    <div class="color-swatch" style="background-color: purple;" onclick="changeColor('purple')"></div>
-    <div class="color-swatch" style="background-color: cyan;" onclick="changeColor('cyan')"></div>
-    <div class="color-swatch" style="background-color: magenta;" onclick="changeColor('magenta')"></div>
-    <div class="color-swatch" style="background-color: lime;" onclick="changeColor('lime')"></div>
-    <div class="color-swatch" style="background-color: teal;" onclick="changeColor('teal')"></div>
-    <div class="color-swatch" style="background-color: silver;" onclick="changeColor('silver')"></div>
-    <div class="color-swatch" style="background-color: gold;" onclick="changeColor('gold')"></div>
+
     
     <!-- Add more color swatches as needed -->
   </div>
   <!-- Button to exit the game and return to the main menu -->  
 <button id="exitButton" style="background-color: #3B82F6; display: none; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;"   onclick="exitGame()">Exit Game</button>
+</div>
 
   
   <script>
@@ -184,7 +185,7 @@
     const timerDisplay = document.getElementById('timerDisplay');
     const displaySolutionBtn = document.getElementById('displaySolutionBtn');
     let selectedColor = 'red'; // Default color
-    let solutionColors = ['red', 'green', 'blue', 'yellow', 'orange', 'brown', 'pink', 'purple', 'cyan', 'magenta', 'lime', 'teal', 'silver', 'gold']; // Solution colors
+    let solutionColors = ['red', 'green', 'blue', 'yellow', 'orange', 'brown']; // Solution colors
     let timer;
     const colorsLength = solutionColors.length;
     console.log(solutionColors.length); // Output: 14
@@ -313,19 +314,19 @@ function startGame() {
       break;
     case 'intermediate':
       gridSize = 7;
-      timerDuration = '40';
+      timerDuration = '1';
       break;
     case 'hard':
       gridSize = 10;
-      timerDuration = '90';
+      timerDuration = '1';
       break;
     case 'advanced':
       gridSize = 13;
-      timerDuration = '120';
+      timerDuration = '1';
       break;
     default:
       gridSize = 10; // Default to hard difficulty
-      timerDuration = '90';
+      timerDuration = '1';
       break;
   }
 
@@ -362,7 +363,6 @@ function updateTimer() {
   } else {
     clearInterval(timer); // Stop the timer when time is up
     displaySolutionBtn.style.display = 'inline-block'; // Show display solution button
-    startButton.disabled = false;
 
   }
 }
