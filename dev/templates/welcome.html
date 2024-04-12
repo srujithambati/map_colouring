@@ -116,65 +116,84 @@
       margin-top: 10px;
     }
     .mainContainer{
-      display: flex;
+      flex:1
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh; /* Adjust the height as needed */
     }
+    .score {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: rgba(240, 240, 240, 0.2); /* Background color with lower opacity */
+      border-radius: 5px;
+  }
+  .main {
+    display: flex;
+    margin-left: 30%;
+    margin-top: 5%;
+    }
+
+
+
   </style>
 </head>
 <body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
   <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
+<div class="main">
+  <div class="mainContainer" id="divA">
+    <h2 class="heading">Welcome, {{ fullname }}</h2>
+    <h3 class="selectHeading">Select difficulty level</h3> 
 
-  <div class="mainContainer">
-  <h2 class="heading">Welcome, {{ fullname }}</h2>
-  <h3 class="selectHeading">Select difficulty level</h3> 
-
-  <div class="difficulty-selector">
-    <label class="difficulty-option">
-      <input type="radio" name="difficulty" value="easy" checked>
-      <span class="radio-custom"></span>
-      Easy
-    </label>
-    <label class="difficulty-option">
-      <input type="radio" name="difficulty" value="intermediate">
-      <span class="radio-custom"></span>
-      Intermediate
-    </label>
-    <label class="difficulty-option">
-      <input type="radio" name="difficulty" value="hard">
-      <span class="radio-custom"></span>
-      Hard
-    </label>
-    <label class="difficulty-option">
-      <input type="radio" name="difficulty" value="advanced">
-      <span class="radio-custom"></span>
-      Advanced
-    </label>
-  </div>
+    <div class="difficulty-selector">
+      <label class="difficulty-option">
+        <input type="radio" name="difficulty" value="easy" checked>
+        <span class="radio-custom"></span>
+        Easy
+      </label>
+      <label class="difficulty-option">
+        <input type="radio" name="difficulty" value="intermediate">
+        <span class="radio-custom"></span>
+        Intermediate
+      </label>
+      <label class="difficulty-option">
+        <input type="radio" name="difficulty" value="hard">
+        <span class="radio-custom"></span>
+        Hard
+      </label>
+      <label class="difficulty-option">
+        <input type="radio" name="difficulty" value="advanced">
+        <span class="radio-custom"></span>
+        Advanced
+      </label>
+    </div>
   
-  <div class="button-container">
-    <button id="start" onclick="startGame()">Start</button>
-    <button id="reset" onclick="reset()" style="display: none">Reset</button>
-    <button id="displaySolutionBtn" style="display: none" onclick="displaySolution()">Display Solution</button>
-  </div>
-  <div id="score" style="display: none;">Score: <span id="scoreValue">0</span></div>
-  <div id="timerDisplay" style="display: none;">Time Left: <span id="timerValue">20</span> seconds</div>
-  <div class="map" id="map" style="display: none;"></div>
-  <div class="color-palette" style="display: none;">
-    <div class="color-swatch" style="background-color: red;" onclick="changeColor('red')"></div>
-    <div class="color-swatch" style="background-color: green;" onclick="changeColor('green')"></div>
-    <div class="color-swatch" style="background-color: blue;" onclick="changeColor('blue')"></div>
-    <div class="color-swatch" style="background-color: yellow;" onclick="changeColor('yellow')"></div>
-    <div class="color-swatch" style="background-color: orange;" onclick="changeColor('orange')"></div>
-    <div class="color-swatch" style="background-color: brown;" onclick="changeColor('brown')"></div>
+    <div class="button-container">
+      <button id="start" onclick="startGame()">Start</button>
+      <button id="reset" onclick="reset()" style="display: none">Reset</button>
+      <button id="displaySolutionBtn" style="display: none" onclick="displaySolution()">Display Solution</button>
+    </div>
+    <div id="score" style="display: none;">Score: <span id="scoreValue">0</span></div>
+    <div id="timerDisplay" style="display: none;">Time Left: <span id="timerValue">20</span> seconds</div>
+    <div class="map" id="map" style="display: none;"></div>
+    <div class="color-palette" style="display: none;">
+      <div class="color-swatch" style="background-color: red;" onclick="changeColor('red')"></div>
+      <div class="color-swatch" style="background-color: green;" onclick="changeColor('green')"></div>
+      <div class="color-swatch" style="background-color: blue;" onclick="changeColor('blue')"></div>
+      <div class="color-swatch" style="background-color: yellow;" onclick="changeColor('yellow')"></div>
+      <div class="color-swatch" style="background-color: orange;" onclick="changeColor('orange')"></div>
+      <div class="color-swatch" style="background-color: brown;" onclick="changeColor('brown')"></div>
 
-    
-    <!-- Add more color swatches as needed -->
+      
+    </div>
+    <button id="exitButton" style="background-color: #3B82F6; display: none; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;"   onclick="exitGame()">Exit Game</button>
   </div>
-  <!-- Button to exit the game and return to the main menu -->  
-<button id="exitButton" style="background-color: #3B82F6; display: none; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;"   onclick="exitGame()">Exit Game</button>
+  <div class="secondContainer" id="recentScores" style="display:none; margin-left: 10%; margin-top: 5%;">
+    <h2>Recent Scores</h2>
+    <div id="recent-scores-container">
+        <!-- Recent scores will be dynamically added here -->
+    </div>
+  </div>
 </div>
 
   
@@ -189,7 +208,9 @@
     let timer;
     const colorsLength = solutionColors.length;
     console.log(solutionColors.length); // Output: 14
+    const userId = {{ user_id }};
 
+    console.log("user id",userId);
     // Create grid cells for the map
     let gridSize, timerDuration;
     for (let i = 0; i < gridSize * gridSize; i++) {
@@ -314,7 +335,7 @@ function startGame() {
       break;
     case 'intermediate':
       gridSize = 7;
-      timerDuration = '1';
+      timerDuration = '30';
       break;
     case 'hard':
       gridSize = 10;
@@ -363,6 +384,13 @@ function updateTimer() {
   } else {
     clearInterval(timer); // Stop the timer when time is up
     displaySolutionBtn.style.display = 'inline-block'; // Show display solution button
+    submitScore(parseInt(scoreValue.textContent));
+    console.log("score is",parseInt(scoreValue.textContent));
+    const recentScoresData = document.getElementById('recentScores');
+    recentScoresData.style.display = 'block';
+
+    recentScoresData.style.float = 'right';
+
 
   }
 }
@@ -385,6 +413,9 @@ function exitGame() {
   const heading = document.querySelector('.selectHeading');
   heading.style.display ='none';
   resetButton.style.display='none'
+  // Refresh the page without using cache
+  location.reload(true);
+
 
 
 }
@@ -436,6 +467,69 @@ function displaySolution() {
     cell.style.backgroundColor = color;
   });
 }
+
+function submitScore(score) {
+  // Make an AJAX request to the submit_score endpoint
+  fetch('/submit_score', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ score: score })
+  })
+  .then(response => {
+      if (response.ok) {
+          // Score submitted successfully
+          console.log('Score submitted successfully');
+          // Parse the JSON response
+          return response.json();
+      } else {
+          // Error handling
+          console.error('Failed to submit score');
+      }
+  })
+  .then(data => {
+      // Log the returned recent scores data
+      console.log('Recent scores:', data.recent_scores);
+      // Display recent scores
+      displayRecentScores(data.recent_scores);
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+}
+
+
+
+// Function to format the date as "d month yyyy"
+function formatDate(dateString) {
+  const options = { day: 'numeric', month: 'long', year: 'numeric' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
+}
+
+function displayRecentScores(scores) {
+  // Get the container element for scores
+  const scoresContainer = document.getElementById('recent-scores-container');
+
+  // Clear any existing scores
+  scoresContainer.innerHTML = '';
+
+  // Create and append elements for each score
+  scores.forEach(score => {
+    const scoreElement = document.createElement('div');
+    scoreElement.classList.add('score');
+    scoreElement.textContent = `Score: ${score.score}, Date: ${formatDate(score.timestamp)}`;
+    scoresContainer.appendChild(scoreElement);
+  });
+}
+
+
+
+
+
+
+
 
   </script>
 </body>

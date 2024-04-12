@@ -69,6 +69,7 @@
 #     app.run(debug=True)
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from werkzeug.security import check_password_hash
@@ -78,6 +79,7 @@ app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Initialize Flask-Bcrypt
 bcrypt = Bcrypt(app)
@@ -134,7 +136,8 @@ def login():
 def welcome():
     if 'user_id' in session:
         fullname = session['fullname']  # Retrieve full name from session
-        return render_template('welcome.html', fullname=fullname)
+        id = session['user_id']
+        return render_template('welcome.html', fullname=fullname,user_id=id)
     else:
         return redirect(url_for('login'))
 
@@ -143,6 +146,68 @@ def logout():
     session.pop('user_id', None)  # Remove 'user_id' from session
     session.pop('fullname', None)  # Remove 'fullname' from session
     return redirect(url_for('login'))
+
+
+from flask import request, jsonify
+from models import User, Scores  # Import the Scores model
+
+from flask import session, abort
+
+# @app.route('/submit_score', methods=['POST'])
+# def submit_score():
+#     # Ensure user is logged in
+#     if 'user_id' not in session:
+#         abort(401)  # Unauthorized
+
+#     # Retrieve user ID from session
+#     user_id = session['user_id']
+
+#     # Retrieve score data from request
+#     score_data = request.json
+#     score_value = score_data.get('score')
+
+#     # Save score to the database
+#     if score_value is not None:
+#         score = Scores(user_id=user_id, score=score_value)
+#         db.session.add(score)
+#         db.session.commit()
+#         return jsonify({'message': 'Score submitted successfully'}), 200
+#     else:
+#         return jsonify({'error': 'Score data missing or incorrect format'}), 400
+
+from sqlalchemy import desc
+
+@app.route('/submit_score', methods=['POST'])
+def submit_score():
+    # Ensure user is logged in
+    if 'user_id' not in session:
+        abort(401)  # Unauthorized
+
+    # Retrieve user ID from session
+    user_id = session['user_id']
+
+    # Retrieve score data from request
+    score_data = request.json
+    score_value = score_data.get('score')
+
+    # Save score to the database
+    if score_value is not None:
+        score = Scores(user_id=user_id, score=score_value)
+        db.session.add(score)
+        db.session.commit()
+
+        # Fetch the 5 most recent scores of the user
+        recent_scores = Scores.query.filter_by(user_id=user_id).order_by(desc(Scores.timestamp)).limit(5).all()
+
+        # Convert recent scores to a list of dictionaries for JSON response
+        recent_scores_data = [{'score': s.score, 'timestamp': s.timestamp} for s in recent_scores]
+
+        return jsonify({'message': 'Score submitted successfully', 'recent_scores': recent_scores_data}), 200
+    else:
+        return jsonify({'error': 'Score data missing or incorrect format'}), 400
+
+
+
 
 if __name__ == '__main__':
     db.create_all()
