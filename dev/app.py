@@ -112,7 +112,7 @@ def signup():
         return redirect(url_for('login'))
 
     # Pass flashed message to the template
-    flash_message = flash('error')
+    flash_message = "error"
     print(flash_message)  # Print flashed message for debugging
     return render_template('signup.html', flash_message=flash_message)
 

@@ -134,11 +134,19 @@
     margin-top: 5%;
     }
 
-
+    .instructionsClass {
+      margin-top: 10px;
+      width: 100%;
+      background-color: #f0f0f0; /* Add your desired background color */
+      padding: 20px; /* Add padding to make it look better */
+      border-radius: 5px;
+      border: 2px;
+  }
 
   </style>
 </head>
-<body style="background-image: url('/static/bg.jpg'); background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
+<!--style="background-image: url('/static/bg.jpg'); background-position: center;" -->
+<body  class="bg-gray-100 flex justify-center items-center h-screen">
   <a href="{{ url_for('logout') }}" class="logout-btn" style="background-color: #3B82F6; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;">Logout</a>
 <div class="main">
   <div class="mainContainer" id="divA">
@@ -187,13 +195,24 @@
       
     </div>
     <button id="exitButton" style="background-color: #3B82F6; display: none; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; text-decoration: none; transition: background-color 0.3s ease-in-out; font-size: 14px; font-family: 'Arial', sans-serif;"   onclick="exitGame()">Exit Game</button>
+    <div class="instructionsClass" id="instructions">
+      <h2>Instructions</h2>
+      <ol>
+      <li>This game is timer-based, so have a check at the timer!</li>
+      <li>Adjacent grids can't have the same color.</li>
+      <li>Grids in the same diagonal line can't have same colors.</li>
+      <li>Score is given based on the number of colored grids at the end of the timer</li>
+      </ol>
+    </div>
   </div>
   <div class="secondContainer" id="recentScores" style="display:none; margin-left: 10%; margin-top: 5%;">
     <h2>Recent Scores</h2>
     <div id="recent-scores-container">
         <!-- Recent scores will be dynamically added here -->
     </div>
+
   </div>
+
 </div>
 
   
@@ -203,6 +222,7 @@
     const scoreValue = document.getElementById('scoreValue');
     const timerDisplay = document.getElementById('timerDisplay');
     const displaySolutionBtn = document.getElementById('displaySolutionBtn');
+    //let isIntermediate = false
     let selectedColor = 'red'; // Default color
     let solutionColors = ['red', 'green', 'blue', 'yellow', 'orange', 'brown']; // Solution colors
     let timer;
@@ -252,6 +272,15 @@
         alert('Adjacent regions cannot have the same color!');
         return;
       }
+     /* let diff= document.querySelector('input[name="difficulty"]:checked').value
+      if (diff == 'intermediate') {
+        console.log(diff)
+        // Check if each row and column has more than 3 repeated colors
+        if (!checkRowColumnConstraints(cell, color)) {
+            alert('Each row and column cannot have more than 3 repeated colors!');
+            return;
+        }
+    }*/
       
       cell.dataset.color = color;
       cell.style.backgroundColor = color;
@@ -331,7 +360,7 @@ function startGame() {
   switch (difficulty) {
     case 'easy':
       gridSize = 5;
-      timerDuration = '1';
+      timerDuration = '10';
       break;
     case 'intermediate':
       gridSize = 7;
@@ -339,15 +368,15 @@ function startGame() {
       break;
     case 'hard':
       gridSize = 10;
-      timerDuration = '1';
+      timerDuration = '10';
       break;
     case 'advanced':
       gridSize = 13;
-      timerDuration = '1';
+      timerDuration = '10';
       break;
     default:
       gridSize = 10; // Default to hard difficulty
-      timerDuration = '1';
+      timerDuration = '10';
       break;
   }
 
@@ -363,6 +392,8 @@ function startGame() {
   const colorPalette = document.querySelector('.color-palette');
   const selector = document.querySelector('.difficulty-selector');
   const heading = document.querySelector('.selectHeading');
+  const ins = document.querySelector('.instructionsClass');
+
   heading.style.display ='none';
   resetButton.style.display = 'block';
   selector.style.display ='none';
@@ -370,6 +401,7 @@ function startGame() {
   colorPalette.style.display = 'flex';
   timerDisplay.style.display = 'block'; // Show timer
   timer = setInterval(updateTimer, 1000); // Start the timer
+  ins.style.display = 'none';
 }
 
 
@@ -413,12 +445,35 @@ function exitGame() {
   const heading = document.querySelector('.selectHeading');
   heading.style.display ='none';
   resetButton.style.display='none'
+  const ins = document.querySelector('.instructionsClass');
+
+  ins.style.display = 'none';
+
   // Refresh the page without using cache
   location.reload(true);
 
 
 
 }
+/*
+function checkRowColumnConstraints(cell, color) {
+  // Get the current row and column index of the cell
+  const grid = map.children;
+  const index = Array.from(grid).indexOf(cell);
+  const numRows = gridSize;
+  const numCols = gridSize;
+  const neighbors = [];
+  const offsets = [-numCols - 1, -numCols, -numCols + 1, -1, 1, numCols - 1, numCols, numCols + 1];
+
+  console.log("grid",grid)
+  console.log("index",index)
+  console.log("offsets",offsets)
+
+  return true;
+}*/
+
+
+
 
 
 

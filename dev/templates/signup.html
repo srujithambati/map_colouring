@@ -13,9 +13,9 @@
         }
     </style>
 </head>
-
-<body style="background-image: url('/static/bg.jpg'); background-size: cover; background-position: center;" class="bg-gray-100 flex justify-center items-center h-screen">
-    <div class="bg-white bg-opacity-50 p-8 rounded shadow-md w-96">
+<!--style="background-image: url('/static/bg.jpg'); background-size: cover; background-position: center;"-->
+<body  class="bg-gray-100 flex justify-center items-center h-screen">
+    <div class="bg-white bg-opacity-50 p-8 rounded shadow-md w-96 border-2 border-gray-300">
         <h1 class="text-2xl font-semibold mb-4">Sign Up</h1>
         <form id="signupForm" action="/signup" method="post" onsubmit="return validateForm()">
             <div class="mb-4">
@@ -66,10 +66,12 @@
             }
 
             var flashMessage = "{{ flash_message }}";
-            if (flashMessage) {
-                // Do something with the flashed message (e.g., display it)
-                alert("User already exists");
+            //message=get_flashed_messages()
+            console.log(message)
+            if (flashMessage === "error") {
+                alert("An error occurred!");
             }
+            
 
             return true;
         }
