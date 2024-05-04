@@ -1,91 +1,26 @@
-# from flask import Flask, render_template, request, redirect, url_for, session
-# from flask_sqlalchemy import SQLAlchemy
-# from werkzeug.security import check_password_hash
-# from flask_bcrypt import Bcrypt,check_password_hash
-# from flask_migrate import Migrate
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort
+from extensions import db
 
-# app = Flask(__name__)
-# app.secret_key = 'your_secret_key'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy(app)
-
-# # Initialize Flask-Migrate
-# migrate = Migrate(app, db)
-
-# from models import User
-
-# @app.route('/')
-# def home():
-#     return render_template('signup.html')
-
-# bcrypt = Bcrypt(app)
-
-# @app.route('/signup', methods=['GET', 'POST'])
-# def signup():
-#     if request.method == 'POST':
-#         fullname= request.form['fullname']
-#         email = request.form['email']
-#         password = request.form['password']
-#         print("||||email|||||",email)
-#         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-#         new_user = User(fullname=fullname,email=email, password=hashed_password)
-#         db.session.add(new_user)
-#         db.session.commit()
-#         return redirect(url_for('login'))
-#     return render_template('signup.html')
-
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     error = None  # Initialize error variable
-#     if request.method == 'POST':
-#         email = request.form['email']
-#         password = request.form['password']
-#         user = User.query.filter_by(email=email).first()
-#         if user and bcrypt.check_password_hash(user.password, password):
-#             session['user_id'] = user.id
-#             session['fullname'] = user.fullname  # Pass the full name to the session
-#             return redirect(url_for('welcome'))
-#         else:
-#             error = 'Invalid email or password'  # Set the error message
-#     return render_template('login.html', error=error)
-
-# @app.route('/welcome')
-# def welcome():
-#     if 'user_id' in session:
-#         fullname = session['fullname']  # Retrieve full name from session
-#         return render_template('welcome.html', fullname=fullname)
-#     else:
-#         return redirect(url_for('login'))
-
-
-# @app.route('/logout')
-# def logout():
-#     session.pop('username', None)
-#     return redirect(url_for('login'))
-
-# if __name__ == '__main__':
-#     db.create_all()
-#     app.run(debug=True)
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from werkzeug.security import check_password_hash
+from sqlalchemy import desc
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
+# Initialize SQLAlchemy with the Flask app
+db.init_app(app)
 migrate = Migrate(app, db)
 
 # Initialize Flask-Bcrypt
 bcrypt = Bcrypt(app)
 
+
+
 # Import User model after db creation
-from models import User
 
 @app.route('/')
 def home():
@@ -93,6 +28,7 @@ def home():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    from models import User
     if request.method == 'POST':
         fullname = request.form['fullname']
         email = request.form['email']
@@ -118,6 +54,8 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    from models import User
+
     error = None  # Initialize error variable
     if request.method == 'POST':
         email = request.form['email']
@@ -148,37 +86,11 @@ def logout():
     return redirect(url_for('login'))
 
 
-from flask import request, jsonify
-from models import User, Scores  # Import the Scores model
-
-from flask import session, abort
-
-# @app.route('/submit_score', methods=['POST'])
-# def submit_score():
-#     # Ensure user is logged in
-#     if 'user_id' not in session:
-#         abort(401)  # Unauthorized
-
-#     # Retrieve user ID from session
-#     user_id = session['user_id']
-
-#     # Retrieve score data from request
-#     score_data = request.json
-#     score_value = score_data.get('score')
-
-#     # Save score to the database
-#     if score_value is not None:
-#         score = Scores(user_id=user_id, score=score_value)
-#         db.session.add(score)
-#         db.session.commit()
-#         return jsonify({'message': 'Score submitted successfully'}), 200
-#     else:
-#         return jsonify({'error': 'Score data missing or incorrect format'}), 400
-
-from sqlalchemy import desc
 
 @app.route('/submit_score', methods=['POST'])
 def submit_score():
+    from models import Scores  # Import the Scores model
+
     # Ensure user is logged in
     if 'user_id' not in session:
         abort(401)  # Unauthorized
@@ -210,5 +122,8 @@ def submit_score():
 
 
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
+
+
