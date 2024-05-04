@@ -1,3 +1,6 @@
+#App has been hosted on AWS EC2 insance.  use the link http://13.235.51.173:5000/ to run it
+
+
 # Step 1: Clone the Repository
 git clone https://github.com/your-username/your-project.git
 
