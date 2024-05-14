@@ -1,4 +1,4 @@
-#App has been hosted on AWS EC2 insance.  use the link http://13.235.51.173:5000/ to run it
+#App has been hosted on AWS EC2 insance.  use the link [http://52.66.206.74:5000/welcome] to run it
 
 
 # Step 1: Clone the Repository
